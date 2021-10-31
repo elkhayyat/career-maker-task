@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  redis:
+    image: "redis:alpine"
+
+  django:
+    build: .
+    command: bash -c "python /task/manage.py migrate --noinput && python /task/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/task
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  celery:
+    build: .
+    command: celery -A CareerMaker worker -l info
+    volumes:
+      - .:/task
+    depends_on:
+      - postgres
+      - redis
+
+  celery-beat:
+    build: .
+    command: celery -A CareerMaker beat -l info
+    volumes:
+      - .:/task
+    depends_on:
+      - postgres
+      - redis
