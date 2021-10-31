@@ -164,6 +164,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'run-every-hour': {
         'task': 'alphavantage_api.tasks.get_data_from_api',
-        'schedule': crontab(hour='*/1')
+        'schedule': crontab(minute=0, hour='*/1')
     }
 }
